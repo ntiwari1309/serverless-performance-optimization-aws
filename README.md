@@ -1,106 +1,73 @@
-# AWS Serverless Performance Optimization Lab
+## Load Testing and Performance Optimization
 
-## Overview
+The Lambda function was initially configured with **128 MB** of memory.
 
-This project demonstrates how to build, test, and optimize a serverless microservice using AWS services.
+Performance testing was performed using Postman Runner with:
 
-Technologies used:
-
-* Amazon API Gateway
-* AWS Lambda
-* Amazon DynamoDB
-* AWS Step Functions
-* AWS Lambda Power Tuning
-* Postman Performance Testing
-
-The objective was to build a serverless API, test it under load, and identify the optimal Lambda memory configuration using data-driven analysis.
-
----
-
-## Architecture
-
-![Serverless Architecture](images/serverless-architecture.png)
-
-Client → API Gateway → Lambda → DynamoDB
-
-The Lambda function performs CRUD operations against DynamoDB through a REST API exposed by API Gateway.
-
-### Serverless Benefits
-
-* No servers to manage
-* Auto scaling
-* Pay-per-use pricing
-* Event-driven architecture
-
----
-
-## Load Testing with Postman
-
-Performance testing was performed using Postman Runner.
-
-### Test Configuration
-
-* Ramp Up Profile
 * 10 Virtual Users
 * 2 Minute Duration
+* Ramp Up (30 Seconds) Profile
 
-### Results
+### Baseline Test (128 MB Memory)
 
-![Postman Test 1](images/postman-load-test-results-1.png)
+![Baseline Test](images/postman-load-test-results-1.png)
 
-![Postman Test 2](images/postman-load-test-results-2.png)
+Results:
 
-The tests established a performance baseline and helped measure application behavior under load.
-
----
-
-## AWS Lambda Power Tuning
-
-![Power Tuning Overview](images/lambda-power-tuning-overview.png)
-
-AWS Lambda Power Tuning was used to compare multiple memory configurations:
-
-* 128 MB
-* 256 MB
-* 512 MB
-* 1024 MB
-
-The objective was to identify the optimal balance between cost and performance.
-
-### Power Tuning Results
-
-![Power Tuning Results](images/lambda-power-tuning-results.png)
-
-Key metrics evaluated:
-
-* Execution duration
-* Cost per invocation
-* Cost vs Performance tradeoffs
+* Total Requests: 1,578
+* Requests / Second: 13.11
+* Average Response Time: 550 ms
+* P90 Response Time: 568 ms
+* P95 Response Time: 612 ms
+* P99 Response Time: 1,289 ms
+* Error Rate: 0%
 
 ---
 
-## AWS Well-Architected Framework
+### Optimization Performed
 
-### Performance Efficiency
+AWS Lambda memory allocation was increased from **128 MB** to **1024 MB**.
 
-Power Tuning helps identify the most efficient Lambda memory allocation.
-
-### Cost Optimization
-
-Different memory configurations impact execution cost and overall efficiency.
-
-### Operational Excellence
-
-Load testing provides measurable performance data that supports architecture decisions.
-
-### Reliability
-
-Testing validates application behavior under load and helps identify bottlenecks.
+Increasing Lambda memory also increases available CPU resources, enabling the function to process requests more efficiently.
 
 ---
 
-## Key Takeaways
+### Optimized Test (1024 MB Memory)
 
-One key takeaway from this project is that serverless applications still require performance engineering.
+![Optimized Test](images/postman-load-test-results-2.png)
 
-Rather than relying on default settings, load testing and Lambda Power Tuning provide measurable data that supports better architectural decisions and workload optimization.
+Results:
+
+* Total Requests: 2,720
+* Requests / Second: 22.59
+* Average Response Time: 316 ms
+* P90 Response Time: 321 ms
+* P95 Response Time: 328 ms
+* P99 Response Time: 376 ms
+* Error Rate: 0%
+
+---
+
+### Performance Comparison
+
+| Metric            |   128 MB | 1024 MB | Improvement |
+| ----------------- | -------: | ------: | ----------: |
+| Total Requests    |    1,578 |   2,720 |        +72% |
+| Requests / Second |    13.11 |   22.59 |        +72% |
+| Avg Response Time |   550 ms |  316 ms |  43% Faster |
+| P90               |   568 ms |  321 ms |  43% Faster |
+| P95               |   612 ms |  328 ms |  46% Faster |
+| P99               | 1,289 ms |  376 ms |  71% Faster |
+
+### Key Findings
+
+The optimized Lambda configuration processed significantly more requests while reducing response times across all latency percentiles.
+
+Most notably:
+
+* 72% increase in throughput
+* 43% reduction in average response time
+* 71% improvement in P99 latency
+* Zero errors during testing
+
+This exercise demonstrated that AWS Lambda memory allocation can have a substantial impact on application performance because additional memory also provides additional CPU resources.
